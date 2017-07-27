@@ -49,6 +49,10 @@ with open('generated/filteredTrainingData.json', 'r') as data:
 
         output.append(spellingErrorToWordRatio)
 
+        starRating = reviews[reviewNumber]["overall"]
+
+        output.append(int(starRating))
+
         print (output)
 
         reviewNumber += 1
