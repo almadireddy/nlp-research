@@ -1,6 +1,7 @@
 import spacy
 import os
 import json
+from textstat.textstat import textstat
 
 nlp = spacy.load('en')
 
@@ -18,7 +19,6 @@ with open('generated/filteredTrainingData.json', 'r') as data:
         processed = nlp(reviewText)
 
         numberOfSentences = 0
-        numberOfSyllables = 0
         numberOfWords = 0
 
         for sentence in processed.sents:
@@ -30,8 +30,17 @@ with open('generated/filteredTrainingData.json', 'r') as data:
                 numberOfWords += 1
         output.append(numberOfWords)
 
-        print (output)
+        numberOfSyllables = textstat.syllable_count(reviewText)
 
-        processedOutput.append(numberOfSentences)
+        wordsPerSentence = numberOfWords / numberOfSentences
+        syllablesPerWord = numberOfSyllables / numberOfWords
+
+        # readingScore = (0.39 * wordsPerSentence) + (11.8 * syllablesPerWord) - 15.59
+
+        readingScore = textstat.flesch_kincaid_grade(reviewText)
+
+        output.append(readingScore)
+
+        print (output)
 
         reviewNumber += 1
