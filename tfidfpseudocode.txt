@@ -1,0 +1,21 @@
+create a list of lists, the format should be as such: <<lemma, # of times it appears in the review>,<lemma, # of times it appears in the review>...>
+
+loop through every word in the review 
+	find out the lemma of the word
+	if the lemma already exists in the list, then just add one to the # of times it appears
+	else create a new entry in the list
+
+add TF values to each individual list, the format should be as such: <<lemma, # of times, TF>,<lemma, # of times  TF>...> ... to find the TF value, divide the # of times value by the number of lemmas
+
+loop through all the lemmas in any one of the lists of lists
+
+	loop through all the reviews and see if each review contains the selected lemma 
+		
+	add an entry to each individual list regarding how many reviews contain the lemma in the list
+
+
+	
+
+add IDF values to each individual list ... to find the IDF value follow this formula: 20/number of reviews that contain the lemma in the list
+
+add TF-IDF values to each individual list, to the TF-IDF value follow this formula: TF*IDF

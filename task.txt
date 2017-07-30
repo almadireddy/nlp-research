@@ -1,6 +1,6 @@
 Task Description: The goal of this task is to build a baseline system with SVM regression to predict helpfulness ratios of user-generated product reviews based on review content features. You will generate two sets of test and training files, process review text with a NLP library, and use a SVMR implementation to train and test a system. 
 
-1. Go to http://jmcauley.ucsd.edu/data/amazon/ and download the "Electronics" data file. From this, filter out reviews to create two sets of training and test files; one set will be unfiltered, the other must include only reviews with 10 or more votes; both sets should consist of 1000 reviews each (20 reviews from 50 products). From these two sets you will generate two sets of training and test files (80% trainig, 20% testing).
+1. Go to http://jmcauley.ucsd.edu/data/amazon/ and download the "Electronics" data file. From this, filter out reviews to create two sets of training and test files; one set will be unfiltered, the other must include only reviews with 10 or more votes; both sets should consist of 1000 reviews each (20 reviews from 50 products). From these two sets you will generate two sets of training and test files (80% training, 20% testing).
 2. Either with spaCy or Stanford Core NLP, process reviews in all files and get the following features:
 	a) Length of review in sentences
 	b) Flesch-Kincaid Grade Level
@@ -13,3 +13,5 @@ Task Description: The goal of this task is to build a baseline system with SVM r
 5. For both data sets, run SVMLight regression with default parameters, and then again with the radial basis kernel.
 6. From the results, calculate RMSE and MAE for the 4 systems.
 7. Write a single report based on on http://www.cs.dartmouth.edu/~lorenzo/teaching/cs174/Archive/Winter2015/Projects/finals/ack.pdf and https://cseweb.ucsd.edu/~jmcauley/cse255/reports/wi15/Kristj%C3%A1n_J%C3%B3nsson_Devin_Platt.pdf.
+
+
