@@ -14,8 +14,6 @@ loop through all the lemmas in any one of the lists of lists
 	add an entry to each individual list regarding how many reviews contain the lemma in the list
 
 
-	
-
 add IDF values to each individual list ... to find the IDF value follow this formula: 20/number of reviews that contain the lemma in the list
 
 add TF-IDF values to each individual list, to the TF-IDF value follow this formula: TF*IDF

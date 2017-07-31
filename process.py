@@ -12,10 +12,12 @@ with open('generated/filteredTrainingData.json', 'r') as data:
 
     for line in data:
         reviews.append(json.loads(line))
-        reviewText = reviews[reviewNumber]['reviewText']
-        output = []
 
+    for review in reviews:
+        reviewText = review['reviewText']
         processedReview = nlp(reviewText)
+
+        output = []
 
         numberOfSentences = 0
         numberOfWords = 0
@@ -42,11 +44,24 @@ with open('generated/filteredTrainingData.json', 'r') as data:
         filteredLemmaList = []
 
         for lemma in unfilteredLemmaList:
-            if lemma not in filteredLemmaList:
+            if [lemma] not in filteredLemmaList:
                 filteredLemmaList.append([lemma])
+
+        numberOfLemmas = len(filteredLemmaList)
 
         for lemma in filteredLemmaList:
             lemma.append(unfilteredLemmaList.count(lemma))
+            lemma.append(lemma[1] / numberOfLemmas)
+            lemma.append(0)
+
+            reviewLemmas = []
+
+            for r in reviews:
+                for t in r:
+                    reviewLemmas.append(t.lemma_)
+
+                if lemma[0] in reviewLemmas:
+                    lemma[2] += 1
 
         # Flesch Kincaid Reading Grade
         readingScore = textstat.flesch_kincaid_grade(reviewText)
