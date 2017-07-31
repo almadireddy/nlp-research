@@ -2,6 +2,7 @@ import spacy
 import json
 from textstat.textstat import textstat
 import enchant
+import math
 
 nlp = spacy.load('en')
 dictionary = enchant.Dict('en_US')
@@ -13,69 +14,94 @@ with open('generated/filteredTrainingData.json', 'r') as data:
     for line in data:
         reviews.append(json.loads(line))
 
-    for review in reviews:
-        reviewText = review['reviewText']
-        processedReview = nlp(reviewText)
+    reviews = [reviews[i:i+20] for i in xrange(0, len(reviews), 20)]
 
-        output = []
+    numOfGroups = len(reviews)
+    numOfReviews = 20
 
-        numberOfSentences = 0
-        numberOfWords = 0
-        numberOfSpellingErrors = 0.0
+    for group in range(0, numOfGroups):
 
-        # Number of Sentences
-        for sentence in processedReview.sents:
-            numberOfSentences += 1
+        for i in range(0, 20):
+            reviewText = reviews[group][i]["reviewText"]
+            processedReview = nlp(reviewText)
 
-        unfilteredLemmaList = []
+            output = []
 
-        # Number of Words and Spelling Errors
-        for token in processedReview:
-            if token.is_punct is False:
-                numberOfWords += 1
-                unfilteredLemmaList.append(token.lemma_)
+            numberOfSentences = 0
+            numberOfWords = 0
+            numberOfSpellingErrors = 0.0
 
-                if dictionary.check(token) is False and str(token) != "$":
-                    numberOfSpellingErrors += 1.0
+            # Number of Sentences
+            for sentence in processedReview.sents:
+                numberOfSentences += 1
 
-        spellingErrorToWordRatio = numberOfSpellingErrors / numberOfWords
+            unfilteredLemmaList = []
+            filteredLemmaList = []
 
-        # TF-IDF Statistic
-        filteredLemmaList = []
+            # Number of Words and Spelling Errors
+            for token in processedReview:
+                if token.is_punct is False:
+                    numberOfWords += 1
+                    unfilteredLemmaList.append(token.lemma_)
 
-        for lemma in unfilteredLemmaList:
-            if [lemma] not in filteredLemmaList:
-                filteredLemmaList.append([lemma])
+                    if [token.lemma_] not in filteredLemmaList:
+                        filteredLemmaList.append([token.lemma_])
 
-        numberOfLemmas = len(filteredLemmaList)
+                    if dictionary.check(token) is False and str(token) != "$":
+                        numberOfSpellingErrors += 1.0
 
-        for lemma in filteredLemmaList:
-            lemma.append(unfilteredLemmaList.count(lemma))
-            lemma.append(lemma[1] / numberOfLemmas)
-            lemma.append(0)
+            spellingErrorToWordRatio = numberOfSpellingErrors / numberOfWords
 
-            reviewLemmas = []
+            # TF-IDF Statistic
 
-            for r in reviews:
-                for t in r:
-                    reviewLemmas.append(t.lemma_)
+            # for lemma in unfilteredLemmaList:
+            #     if [lemma] not in filteredLemmaList:
+            #         filteredLemmaList.append([lemma])
 
-                if lemma[0] in reviewLemmas:
-                    lemma[2] += 1
-                    continue
+            numberOfLemmas = float(len(filteredLemmaList))
 
-        # Flesch Kincaid Reading Grade
-        readingScore = textstat.flesch_kincaid_grade(reviewText)
+            for lemma in filteredLemmaList:
+                lemma.append(unfilteredLemmaList.count(lemma[0]))
+                lemma.append(lemma[1] / numberOfLemmas)
+                lemma.append(0)
 
-        # Star Rating
-        starRating = reviews[reviewNumber]["overall"]
+                reviewLemmas = []
 
-        # Output construction
-        output.append(numberOfSentences)
-        output.append(numberOfWords)
-        output.append(readingScore)
-        output.append(spellingErrorToWordRatio)
-        output.append(int(starRating))
+                for product in range(0, 20):
+                    text = reviews[group][product]["reviewText"]
+                    doc = nlp(text)
 
-        print (output)
-        reviewNumber += 1
+                    for t in doc:
+                        reviewLemmas.append(t.lemma_)
+
+                    if lemma[0] in reviewLemmas:
+                        lemma[3] += 1
+                        del reviewLemmas[:]
+                        continue
+
+                    del reviewLemmas[:]
+
+                lemma.append(math.log10(20.0 / lemma[3]))
+
+                lemma.append(lemma[2] * lemma[4])
+
+                print lemma
+
+            # Flesch Kincaid Reading Grade
+            readingScore = textstat.flesch_kincaid_grade(reviewText)
+
+            # Star Rating
+            starRating = reviews[group][i]["overall"]
+
+            # Output construction
+            output.append(numberOfSentences)
+            output.append(numberOfWords)
+            output.append(readingScore)
+            output.append(spellingErrorToWordRatio)
+            output.append(int(starRating))
+
+            print (output)
+            print " "
+            print " "
+            print " "
+            reviewNumber += 1
