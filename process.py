@@ -6,7 +6,6 @@ import enchant
 nlp = spacy.load('en')
 dictionary = enchant.Dict('en_US')
 reviews = []
-processedOutput = []
 
 with open('generated/filteredTrainingData.json', 'r') as data:
     reviewNumber = 0
@@ -26,18 +25,28 @@ with open('generated/filteredTrainingData.json', 'r') as data:
         for sentence in processedReview.sents:
             numberOfSentences += 1
 
+        unfilteredLemmaList = []
+
         # Number of Words and Spelling Errors
         for token in processedReview:
             if token.is_punct is False:
                 numberOfWords += 1
+                unfilteredLemmaList.append(token.lemma_)
 
-            if dictionary.check(token) is False and token.is_punct is False and str(token) != "$":
-                numberOfSpellingErrors += 1.0
+                if dictionary.check(token) is False and str(token) != "$":
+                    numberOfSpellingErrors += 1.0
 
         spellingErrorToWordRatio = numberOfSpellingErrors / numberOfWords
 
         # TF-IDF Statistic
+        filteredLemmaList = []
 
+        for lemma in unfilteredLemmaList:
+            if lemma not in filteredLemmaList:
+                filteredLemmaList.append([lemma])
+
+        for lemma in filteredLemmaList:
+            lemma.append(unfilteredLemmaList.count(lemma))
 
         # Flesch Kincaid Reading Grade
         readingScore = textstat.flesch_kincaid_grade(reviewText)
