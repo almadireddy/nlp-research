@@ -62,6 +62,7 @@ with open('generated/filteredTrainingData.json', 'r') as data:
 
                 if lemma[0] in reviewLemmas:
                     lemma[2] += 1
+                    continue
 
         # Flesch Kincaid Reading Grade
         readingScore = textstat.flesch_kincaid_grade(reviewText)
